@@ -1,0 +1,51 @@
+#Project Goal(net-cat with TCP protocol.)
+
+---> Build a TCP server that && client side :
+
+1-Accepts multiple clients (max 10).
+
+2-Allows each client to pick a unique name (only letters allowed).
+
+3-Broadcasts messages with timestamp + sender name.
+
+4-Shows chat history to new clients.
+
+5-Shows when users join or leave.
+
+6-Handles errors and disconnects properly.
+
+---> Acceptconnections(port string):
+
+1-Start TCP server on the given port.
+
+2-Accept new clients.
+
+3-Refuse if server is full (10 clients).
+
+---> Checkclients() bool :
+
+1-Check if number of users is less than 10.
+
+---> HndleClient(conn net.Conn):
+
+1-Ask user to enter a name.
+
+2-Check name is valid (only letters, not already taken).
+
+3-Add user to the chat room.
+
+4-Send chat history.
+
+5-Handle user's incoming messages.
+
+6-Remove user on disconnect.
+
+---> BroadcastMessage(sender, msg string):
+
+1-Add the message to chat history.
+
+2-Send the message to all other clients.
+
+---> NotifyAll(msg string, except string):
+
+1-Notify all users except one (example: join/leave).
