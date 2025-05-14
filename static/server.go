@@ -62,7 +62,7 @@ func handleMessages(messageChannel chan Message, JoinChannel chan string, LeaveC
 		case msg := <-messageChannel:
 			timesending := time.Now().Format("2006-01-02 15:04:05")
 			SendMsg := fmt.Sprintf("[%s][%s]: %s", timesending, msg.Username, msg.Data)
-
+			
 			file.WriteString(SendMsg + "\n")
 
 			for user, conn := range Usersconn {
@@ -94,7 +94,8 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 
 	reader := bufio.NewReader(conn)
 
-	fmt.Fprintln(conn, NetCatHeader())
+	// fmt.Fprintln(conn, NetCatHeader())
+	conn.Write([]byte(NetCatHeader()))
 
 	username := getValidUsername(conn, reader)
 	if username == "" { return }
@@ -104,7 +105,7 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 
 	
 	sendHistoryToUser(conn)
-	
+
 	// readClientMessages
 	for {
 		msg, err := reader.ReadString('\n')

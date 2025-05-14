@@ -56,10 +56,13 @@ func sendHistoryToUser(conn net.Conn) {
 
 
 func ClearHistory() {
-	if err := os.Truncate("history.txt", 0)	; err != nil {
+	file, err := os.OpenFile("history.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 }
+
 
 func getValidUsername(conn net.Conn, reader *bufio.Reader) string {
 	for {
