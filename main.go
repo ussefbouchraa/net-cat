@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	FU "netcat/connections"
+	N "netcat/static"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 		return
 	} else if len(os.Args) == 2 {
 		port = os.Args[1]
+		if port == "" { os.Stderr.WriteString("Err :Empty Port\n") ; return  }
 	}
-
-	FU.AcceptConnections(port)
+	N.LaunchServer(port)
 }
