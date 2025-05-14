@@ -94,7 +94,6 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 
 	reader := bufio.NewReader(conn)
 
-	// fmt.Fprintln(conn, NetCatHeader())
 	conn.Write([]byte(NetCatHeader()))
 
 	username := getValidUsername(conn, reader)
@@ -103,10 +102,8 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 	Usersconn[username] = conn
 	JoinChannel <- username
 
-	
 	sendHistoryToUser(conn)
 
-	// readClientMessages
 	for {
 		msg, err := reader.ReadString('\n')
 		if err != nil {
