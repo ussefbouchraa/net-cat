@@ -66,7 +66,7 @@ func ClearHistory() {
 
 func getValidUsername(conn net.Conn, reader *bufio.Reader) string {
 	for {
-		fmt.Fprintln(conn, "Enter your Name: ")
+		fmt.Fprint(conn, "[ENTER YOUR NAME]: ")
 		rawUsername, err := reader.ReadString('\n')
 		if err != nil { return "" }
 
@@ -85,3 +85,12 @@ func getValidUsername(conn net.Conn, reader *bufio.Reader) string {
 	}
 }
 
+func isValidMsg(msg string) bool{
+
+	if msg == "" {return false}
+
+	for _, val := range( msg ){
+		if val < 32 && val != '\t' {return false}  
+	}
+	return true
+}

@@ -74,14 +74,14 @@ func handleMessages(messageChannel chan Message, JoinChannel chan string, LeaveC
 		case Clientname := <-JoinChannel:
 			for user, conn := range Usersconn {
 				if user != Clientname {
-					fmt.Fprintln(conn, fmt.Sprintf("%s has joined the chat.", Clientname))
+					fmt.Fprintln(conn, "\n" + fmt.Sprintf("%s has joined the chat.", Clientname))
 				}
 			}
 
 		case Clientname := <-LeaveChannel:
 			for user, conn := range Usersconn {
 				if user != Clientname {
-					fmt.Fprintln(conn, fmt.Sprintf("%s has left the chat.", Clientname))
+					fmt.Fprintln(conn, "\n" + fmt.Sprintf("%s has left the chat.", Clientname))
 				}
 			}
 		}
@@ -105,12 +105,18 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 	sendHistoryToUser(conn)
 
 	for {
+		
+		timesending := time.Now().Format("2006-01-02 15:04:05")
+		prompt := fmt.Sprintf("[%s][%s]:", timesending,username)
+		fmt.Fprint(conn, prompt)
+
 		msg, err := reader.ReadString('\n')
 		if err != nil {
 			break
 		}
 		msg = strings.TrimSpace(msg)
-		if len(msg) > 0 {
+
+		if isValidMsg(msg){
 			messageChannel <- Message{Username: username, Data: msg}
 		}
 	}
