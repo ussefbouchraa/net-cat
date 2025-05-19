@@ -13,6 +13,7 @@ import (
 var (
 	Usersconn = make(map[string]net.Conn)
 	maxUsers = 10
+	count = 0
 )
 
 type Message struct {
@@ -41,7 +42,9 @@ func LaunchServer(port string) {
 		if err != nil {
 			continue
 		}
-		if len(Usersconn) >= maxUsers {
+		count++
+
+		if count > maxUsers {
 			fmt.Fprintln(conn, "Server full. Try again later.")
 			conn.Close()
 			continue
@@ -61,27 +64,36 @@ func handleMessages(messageChannel chan Message, JoinChannel chan string, LeaveC
 		select {
 		case msg := <-messageChannel:
 			timesending := time.Now().Format("2006-01-02 15:04:05")
-			SendMsg := fmt.Sprintf("[%s][%s]: %s", timesending, msg.Username, msg.Data)
+			SendMsg := fmt.Sprintf("[%s][%s]:%s", timesending, msg.Username, msg.Data)
 			
 			file.WriteString(SendMsg + "\n")
 
 			for user, conn := range Usersconn {
 				if user != msg.Username {
-					fmt.Fprintln(conn, SendMsg)
+					fmt.Fprint(conn, "\n" + SendMsg)
+						timesending := time.Now().Format("2006-01-02 15:04:05")
+						prompt := fmt.Sprintf("[%s][%s]:", timesending,user)
+						fmt.Fprint(conn, "\n" + prompt)
 				}
 			}
 
 		case Clientname := <-JoinChannel:
 			for user, conn := range Usersconn {
 				if user != Clientname {
-					fmt.Fprintln(conn, "\n" + fmt.Sprintf("%s has joined the chat.", Clientname))
+					fmt.Fprint(conn, "\n" + fmt.Sprintf("%s has joined the chat.", Clientname))
+						timesending := time.Now().Format("2006-01-02 15:04:05")
+						prompt := fmt.Sprintf("[%s][%s]:", timesending,user)
+						fmt.Fprint(conn, "\n" + prompt)
 				}
 			}
 
 		case Clientname := <-LeaveChannel:
 			for user, conn := range Usersconn {
 				if user != Clientname {
-					fmt.Fprintln(conn, "\n" + fmt.Sprintf("%s has left the chat.", Clientname))
+					fmt.Fprint(conn, "\n" + fmt.Sprintf("%s has left the chat.", Clientname))
+						timesending := time.Now().Format("2006-01-02 15:04:05")
+						prompt := fmt.Sprintf("[%s][%s]:", timesending,user)
+						fmt.Fprint(conn, "\n" + prompt)
 				}
 			}
 		}
@@ -104,11 +116,10 @@ func handleClient(conn net.Conn, messageChannel chan Message, JoinChannel chan s
 
 	sendHistoryToUser(conn)
 
-	for {
-		
+	for {	
 		timesending := time.Now().Format("2006-01-02 15:04:05")
 		prompt := fmt.Sprintf("[%s][%s]:", timesending,username)
-		fmt.Fprint(conn, prompt)
+		fmt.Fprint(conn,  prompt)
 
 		msg, err := reader.ReadString('\n')
 		if err != nil {
